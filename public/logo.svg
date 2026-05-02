@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <!-- Mask to create the clean cutout for the checkmark and the calendar header line -->
+    <mask id="calendar-mask">
+      <rect width="1024" height="1024" fill="white" />
+      <!-- Cutout for the integrated checkmark in the lower right corner -->
+      <circle cx="800" cy="736" r="160" fill="black" />
+      <!-- Cutout to separate the top header of the calendar -->
+      <path d="M224 416 h 576 v 32 h -576 z" fill="black" />
+    </mask>
+  </defs>
+
+  <!-- Solid Light App Icon Background (Squircle) -->
+  <rect width="1024" height="1024" rx="225" fill="#F1F5F9" />
+
+  <!-- Main Calendar Body (Deep Blue #2563EB) -->
+  <rect x="224" y="256" width="576" height="544" rx="64" fill="#2563EB" mask="url(#calendar-mask)" />
+
+  <!-- Calendar Binders / Rings (Deep Blue #2563EB) -->
+  <rect x="352" y="176" width="64" height="144" rx="32" fill="#2563EB" />
+  <rect x="608" y="176" width="64" height="144" rx="32" fill="#2563EB" />
+
+  <!-- Integrated Checkmark (Emerald Green #10B981) -->
+  <path d="M 720 736 l 56 56 l 112 -128" fill="none" stroke="#10B981" stroke-width="64" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
