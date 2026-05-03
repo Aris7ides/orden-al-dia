@@ -1,12 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2025-07-15',
+  app: {
+    layoutTransition: { name: 'layout', mode: 'out-in' },
+  },
+  
   devtools: { enabled: true },
 
   modules: [
     '@nuxt/ui',
     '@vite-pwa/nuxt'
   ],
+  css: ['~/assets/css/main.css'],
   pwa: {
     registerType: 'autoUpdate',
     manifest: {
