@@ -7,11 +7,29 @@ import listPlugin from '@fullcalendar/list'
 import esLocale from '@fullcalendar/core/locales/es'
 
 const isMobile = ref(false)
+const calendarHeight = ref(600)
+
+function updateHeight() {
+  const headerEl = document.querySelector('header')
+  const headerH = headerEl?.offsetHeight ?? 64
+  // p-2 (8px*2) on mobile, p-4 (16px*2) on sm+
+  const verticalPadding = window.innerWidth < 640 ? 16 : 32
+  calendarHeight.value = window.innerHeight - headerH - verticalPadding
+}
 
 onMounted(() => {
   const mq = window.matchMedia('(max-width: 768px)')
   isMobile.value = mq.matches
-  mq.addEventListener('change', (e) => { isMobile.value = e.matches })
+  mq.addEventListener('change', (e) => {
+    isMobile.value = e.matches
+    updateHeight()
+  })
+  updateHeight()
+  window.addEventListener('resize', updateHeight)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateHeight)
 })
 
 const calendarOptions = computed(() => ({
@@ -47,7 +65,8 @@ const calendarOptions = computed(() => ({
   editable: true,
   selectMirror: true,
   dayMaxEvents: true,
-  height: 'auto',
+  height: calendarHeight.value,
+  expandRows: true,
 
   slotMinTime: '06:00:00',
   slotMaxTime: '22:00:00',
@@ -77,7 +96,7 @@ const calendarOptions = computed(() => ({
 
 <template>
   <ClientOnly>
-    <div class="rounded-xl shadow p-4">
+    <div class="rounded-xl shadow overflow-hidden">
       <FullCalendar :options="calendarOptions" />
     </div>
   </ClientOnly>
