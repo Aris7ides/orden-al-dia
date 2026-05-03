@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import FullCalendar from '@fullcalendar/vue3'
 import interactionPlugin from '@fullcalendar/interaction'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -7,7 +6,15 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list'
 import esLocale from '@fullcalendar/core/locales/es'
 
-const calendarOptions = ref({
+const isMobile = ref(false)
+
+onMounted(() => {
+  const mq = window.matchMedia('(max-width: 768px)')
+  isMobile.value = mq.matches
+  mq.addEventListener('change', (e) => { isMobile.value = e.matches })
+})
+
+const calendarOptions = computed(() => ({
   plugins: [
     interactionPlugin,
     timeGridPlugin,
@@ -19,11 +26,13 @@ const calendarOptions = ref({
 
   initialView: 'dayGridMonth',
 
-  headerToolbar: {
-    left: 'prev,next today',
-    center: 'title',
-    right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-  },
+  headerToolbar: isMobile.value
+    ? { left: 'prev,next', center: 'title', right: 'today' }
+    : { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek' },
+
+  footerToolbar: isMobile.value
+    ? { center: 'dayGridMonth,timeGridDay,listWeek' }
+    : undefined,
 
   buttonText: {
     today: 'Hoy',
@@ -63,12 +72,12 @@ const calendarOptions = ref({
       allDay: false
     }
   ]
-})
+}))
 </script>
 
 <template>
   <ClientOnly>
-    <div class="bg-white rounded-xl shadow p-4">
+    <div class="rounded-xl shadow p-4">
       <FullCalendar :options="calendarOptions" />
     </div>
   </ClientOnly>
