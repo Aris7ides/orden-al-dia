@@ -9,6 +9,26 @@ const items: NavigationMenuItem[] = [
     icon: 'i-lucide-house',
     to: '/'
   },
+  {
+    label: 'Eventos',
+    icon: 'i-lucide-calendar-days',
+    to: '/eventos'
+  },
+  {
+    label: 'Etiquetas',
+    icon: 'i-lucide-tags',
+    to: '/etiquetas'
+  },
+  {
+    label: 'Resumen',
+    icon: 'i-lucide-chart-column',
+    to: '/resumen'
+  },
+  {
+    label: 'Configuracion',
+    icon: 'i-lucide-settings',
+    to: '/configuracion'
+  },
 ]
 </script>
 
