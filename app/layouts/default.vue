@@ -37,7 +37,7 @@ const items: NavigationMenuItem[] = [
     <UHeader toggle-side="left" :ui="{ container: 'px-4!' }">
       <template #toggle>
         <UButton
-          icon="i-lucide-panel-left"
+          icon="i-lucide-menu"
           color="neutral"
           variant="ghost"
           aria-label="Toggle sidebar"
@@ -45,7 +45,9 @@ const items: NavigationMenuItem[] = [
         />
       </template>
       <template #title>
-        Orden al Día
+        <div class="p-2 rounded-full bg-green-50 border-4 border-green-700">
+          <span class="font-extrabold text-lg text-green-700">ORDEN AL DÍA</span>
+        </div>
       </template>
       <template #right>
         <UColorModeButton />

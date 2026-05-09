@@ -3,11 +3,11 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "nuxt build",
+    "build": "prisma generate && nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "prisma generate && nuxt prepare"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.20",
@@ -17,11 +17,19 @@
     "@fullcalendar/timegrid": "^6.1.20",
     "@fullcalendar/vue3": "^6.1.20",
     "@nuxt/ui": "^4.7.1",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "@supabase/supabase-js": "^2.105.4",
     "@vite-pwa/nuxt": "^1.1.1",
     "nuxt": "^4.4.4",
     "typescript": "^6.0.3",
     "vue": "^3.5.33",
     "vue-router": "^5.0.6",
     "zod": "^4.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "@types/pg": "^8.20.0",
+    "prisma": "^7.8.0"
   }
 }
