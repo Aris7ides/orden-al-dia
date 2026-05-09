@@ -96,7 +96,7 @@ const calendarOptions = computed(() => ({
 
 <template>
   <ClientOnly>
-    <div class="rounded-xl shadow overflow-hidden">
+    <div class="sm:rounded-xl sm:shadow overflow-hidden sm:ring ring-primary-700 dark:ring-primary-400">
       <FullCalendar :options="calendarOptions" />
     </div>
   </ClientOnly>

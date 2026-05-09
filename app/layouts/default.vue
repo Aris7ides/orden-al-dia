@@ -2,6 +2,7 @@
 import type { NavigationMenuItem } from '@nuxt/ui'
 
 const open = ref(false)
+const { logout } = useAuth()
 
 const items: NavigationMenuItem[] = [
   {
@@ -34,7 +35,7 @@ const items: NavigationMenuItem[] = [
 
 <template>
   <div class="flex flex-col h-screen overflow-hidden">
-    <UHeader toggle-side="left" :ui="{ container: 'px-4!' }">
+    <UHeader toggle-side="left" :ui="{ root: 'border-primary-700 bg-primary-100 dark:border-primary-400 dark:bg-primary-950', container: 'px-4!' }">
       <template #toggle>
         <UButton
           icon="i-lucide-menu"
@@ -45,8 +46,8 @@ const items: NavigationMenuItem[] = [
         />
       </template>
       <template #title>
-        <div class="p-2 rounded-full bg-green-50 border-4 border-green-700">
-          <span class="font-extrabold text-lg text-green-700">ORDEN AL DÍA</span>
+          <div class="p-1 rounded-lg bg-primary-100 ring ring-primary-700 dark:bg-primary-950 dark:ring-primary-400">
+          <span class="font-extrabold text-lg text-primary">ORDEN AL DÍA</span>
         </div>
       </template>
       <template #right>
@@ -63,7 +64,10 @@ const items: NavigationMenuItem[] = [
         :ui="{
           gap: 'h-[calc(100%-var(--ui-header-height))]',
           container:
-            'absolute top-(--ui-header-height) bottom-0 h-[calc(100%-var(--ui-header-height))]'
+            'absolute top-(--ui-header-height) bottom-0 h-[calc(100%-var(--ui-header-height))]',
+          inner: 'ring-primary-700! dark:ring-primary-400!',
+          body: 'bg-primary-100 dark:bg-primary-950',
+          footer: 'border-t border-t-primary-700 bg-primary-100 dark:border-t-primary-400 dark:bg-primary-950',
         }"
       >
         <UNavigationMenu
@@ -71,6 +75,17 @@ const items: NavigationMenuItem[] = [
           orientation="vertical"
           :ui="{ link: 'p-1.5 overflow-hidden' }"
         />
+        <template #footer>
+          <UButton
+            label="Cerrar sesión"
+            icon="i-lucide-log-out"
+            color="neutral"
+            variant="ghost"
+            block
+            class="justify-start"
+            @click="logout"
+          />
+        </template>
       </USidebar>
 
       <div class="flex-1 overflow-y-auto p-2 sm:p-4">
