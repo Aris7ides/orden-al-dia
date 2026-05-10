@@ -11,7 +11,7 @@ export default defineNuxtConfig({
     }
   },
   
-  debug: true,
+  debug: false,
   devtools: { enabled: true },
 
   modules: [
@@ -34,19 +34,19 @@ export default defineNuxtConfig({
       lang: 'es',
       icons: [
         {
-          src: '/logo.svg',
+          src: '/logo.ordenaldia-192.png',
           sizes: '192x192',
-          type: 'image/svg+xml'
+          type: 'image/png'
         },
         {
-          src: '/logo.svg',
+          src: '/logo.ordenaldia-512.png',
           sizes: '512x512',
-          type: 'image/svg+xml'
+          type: 'image/png'
         },
         {
-          src: '/logo.svg',
+          src: '/logo.ordenaldia-512.png',
           sizes: '512x512',
-          type: 'image/svg+xml',
+          type: 'image/png',
           purpose: 'maskable'
         }
       ]
