@@ -1,6 +1,14 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   app: {
+    head: {
+      title: 'OrdenAlDía',
+      meta: [
+        { name: 'description', content: 'Agenda y control mensual de horas e ingresos' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'theme-color', content: '#111827' }
+      ],
+    },
     layoutTransition: { name: 'layout', mode: 'out-in' },
   },
 

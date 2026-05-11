@@ -3,7 +3,8 @@ import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 
 definePageMeta({
-  layout: 'blank'
+  layout: 'blank',
+  title: 'Login - OrdenAlDía'
 })
 
 const toast = useToast()
@@ -92,7 +93,6 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
         description="Ingresá tus credenciales para acceder a tu cuenta."
         icon="i-lucide-calendar-check"
         :fields="fields"
-        :providers="providers"
         :loading="loading"
         submit-label="Entrar"
         @submit="onSubmit"
