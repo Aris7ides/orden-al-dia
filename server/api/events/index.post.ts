@@ -1,32 +1,30 @@
-import { prisma } from "~~/server/utils/prisma" 
+import { prisma } from '~~/server/utils/prisma'
+import { requireUser } from '~~/server/utils/auth'
+import { readBody, createError } from 'h3'
 
 export default defineEventHandler(async (event) => {
+  const { tenantId, userId } = await requireUser(event)
   const body = await readBody(event)
 
   const {
-    tenantId,
     tagId,
     title,
     startTime,
     endTime,
     hourlyRate,
-    createdBy
+    description
   } = body
 
-  // 🧠 1. Validación básica
-  if (!tenantId || !title || !startTime || !endTime) {
+  if (!title || !startTime || !endTime) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Missing required fields'
     })
   }
 
-  // 🧠 2. Calcular horas
   const start = new Date(startTime)
   const end = new Date(endTime)
-
-  const diffMs = end.getTime() - start.getTime()
-  const hours = diffMs / (1000 * 60 * 60)
+  const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60)
 
   if (hours <= 0) {
     throw createError({
@@ -35,21 +33,20 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // 🧠 3. Calcular ingreso
   const rate = hourlyRate ?? 0
   const totalAmount = rate * hours
 
-  // 🧠 4. Crear evento
   const eventCreated = await prisma.event.create({
     data: {
       tenantId,
-      tagId,
+      tagId: tagId ?? null,
       title,
+      description: description ?? null,
       startTime: start,
       endTime: end,
       hourlyRate: rate,
       totalAmount,
-      createdBy
+      createdBy: userId
     }
   })
 
