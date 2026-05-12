@@ -1,8 +1,9 @@
 import { getHeader, createError } from 'h3'
-import jwt from 'jsonwebtoken'
+import { createClient } from '@supabase/supabase-js'
 import { prisma } from '~~/server/utils/prisma'
 
-const JWT_SECRET = process.env.SUPABASE_JWT_SECRET!
+const SUPABASE_URL = process.env.SUPABASE_URL!
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY!
 
 export async function requireUser(event: any) {
   const authHeader = getHeader(event, 'authorization')
@@ -13,15 +14,18 @@ export async function requireUser(event: any) {
 
   const token = authHeader.replace('Bearer ', '')
 
-  let payload: any
+  // Validamos el token directamente con Supabase (no necesita JWT_SECRET manual)
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    global: { headers: { Authorization: `Bearer ${token}` } }
+  })
 
-  try {
-    payload = jwt.verify(token, JWT_SECRET)
-  } catch {
+  const { data: { user }, error } = await supabase.auth.getUser()
+
+  if (error || !user) {
     throw createError({ statusCode: 401, statusMessage: 'Invalid token' })
   }
 
-  const userId = payload.sub
+  const userId = user.id
 
   const tenantUser = await prisma.tenantUser.findFirst({
     where: { userId }
