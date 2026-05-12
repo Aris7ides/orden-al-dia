@@ -279,10 +279,8 @@ async function confirmarEliminar() {
 
           <UFormField name="tagId" label="Etiqueta">
             <USelect
-              v-model="formState.tagId"
-              :options="tagOptions"
-              value-key="value"
-              label-key="label"
+              v-model="formState.tagId!"
+              :items="tagOptions"
               placeholder="Sin etiqueta"
               class="w-full"
             />
