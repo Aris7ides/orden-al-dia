@@ -12,7 +12,8 @@ export default defineEventHandler(async (event) => {
     startTime,
     endTime,
     hourlyRate,
-    description
+    description,
+    isFixedPrice
   } = body
 
   if (!title || !startTime || !endTime) {
@@ -34,7 +35,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const rate = hourlyRate ?? 0
-  const totalAmount = rate * hours
+  const totalAmount = isFixedPrice ? rate : rate * hours
 
   const eventCreated = await prisma.event.create({
     data: {
@@ -46,6 +47,7 @@ export default defineEventHandler(async (event) => {
       endTime: end,
       hourlyRate: rate,
       totalAmount,
+      isFixedPrice: isFixedPrice ? 1 : 0,
       createdBy: userId
     }
   })

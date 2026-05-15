@@ -27,7 +27,8 @@ const schema = z.object({
   startTime: z.string().min(1, 'Fecha inicio obligatoria'),
   endTime: z.string().min(1, 'Fecha fin obligatoria'),
   hourlyRate: z.coerce.number().positive().optional().nullable(),
-  description: z.string().optional().nullable()
+  description: z.string().optional().nullable(),
+  isFixedPrice: z.boolean().optional()
 })
 
 type Schema = z.output<typeof schema>
@@ -38,7 +39,8 @@ const formState = reactive({
   startTime: '',
   endTime: '',
   hourlyRate: null as number | null,
-  description: ''
+  description: '',
+  isFixedPrice: false
 })
 
 const tagOptions = computed(() =>
@@ -56,6 +58,7 @@ watch(() => props.open, (val) => {
     formState.endTime = toDatetimeLocal(props.editando.endTime)
     formState.hourlyRate = props.editando.hourlyRate
     formState.description = props.editando.description ?? ''
+    formState.isFixedPrice = !!props.editando.isFixedPrice
   } else {
     const base = props.fechaInicial ?? (() => {
       const ahora = new Date()
@@ -68,6 +71,7 @@ watch(() => props.open, (val) => {
     formState.endTime = base
     formState.hourlyRate = null
     formState.description = ''
+    formState.isFixedPrice = false
   }
 })
 
@@ -140,25 +144,30 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
           </UFormField>
         </div>
 
-        <UFormField name="hourlyRate" label="Tarifa (opcional)">
-          <UInput
-            v-model.number="formState.hourlyRate"
-            type="number"
-            min="0"
-            step="any"
-            placeholder="Indica la tarifa. Ej: 15"
-            class="w-full"
-          >
-            <template #trailing>
-              <span class="text-zinc-400 text-sm">/h</span>
-            </template>
-          </UInput>
-        </UFormField>
+        <div class="grid grid-cols-2 gap-3">
+            <UFormField name="hourlyRate" label="Tarifa (opcional)">
+                <UInput
+                    v-model.number="formState.hourlyRate"
+                    type="number"
+                    min="0"
+                    step="any"
+                    placeholder="Indica la tarifa. Ej: 15"
+                    class="w-full"
+                >
+                    <template #trailing>
+                    <span class="text-zinc-400 text-sm">/h</span>
+                    </template>
+                </UInput>
+            </UFormField>
+            <UFormField name="isFixedPrice" label="Precio fijo">
+                <USwitch v-model="formState.isFixedPrice" />
+            </UFormField>
+        </div>
 
         <UFormField name="description" label="Observaciones (opcional)">
           <UTextarea v-model="formState.description" placeholder="Notas del evento/trabajo..." class="w-full" />
         </UFormField>
-
+        
         <div class="flex justify-end gap-2 pt-2">
           <UButton variant="ghost" color="neutral" type="button" @click="emit('update:open', false)">
             Cancelar

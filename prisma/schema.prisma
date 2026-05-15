@@ -54,6 +54,7 @@ model Event {
   startTime   DateTime
   endTime     DateTime
   hourlyRate  Float?
+  isFixedPrice Int? @default(0)
   totalAmount Float?
   createdBy   String?
   createdAt   DateTime @default(now())

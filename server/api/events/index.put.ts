@@ -5,7 +5,7 @@ import { readBody, createError } from 'h3'
 export default defineEventHandler(async (event) => {
   const { tenantId } = await requireUser(event)
   const body = await readBody(event)
-  const { id, title, tagId, startTime, endTime, hourlyRate, description } = body
+  const { id, title, tagId, startTime, endTime, hourlyRate, description, isFixedPrice } = body
 
   if (!id || !title || !startTime || !endTime) {
     throw createError({ statusCode: 400, statusMessage: 'Missing required fields' })
@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const rate = hourlyRate ?? 0
-  const totalAmount = rate * hours
+  const totalAmount = isFixedPrice ? rate : rate * hours
 
   const updated = await prisma.event.updateMany({
     where: { id, tenantId },
@@ -31,7 +31,8 @@ export default defineEventHandler(async (event) => {
       endTime: end,
       hourlyRate: rate,
       totalAmount,
-      description: description ?? null
+      description: description ?? null,
+      isFixedPrice: isFixedPrice ? 1 : 0
     }
   })
 

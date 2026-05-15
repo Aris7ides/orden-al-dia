@@ -16,4 +16,5 @@ export type Evento = {
   totalAmount: number | null
   tagId: string | null
   tag: Tag | null
+  isFixedPrice?: number // 0 o 1
 }

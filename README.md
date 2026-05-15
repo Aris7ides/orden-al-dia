@@ -11,3 +11,4 @@ npm run preview
 
 # prisma migrate
 npx prisma migrate dev --name nombre_de_migracion
+npx prisma generate
