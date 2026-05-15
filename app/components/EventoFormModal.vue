@@ -71,6 +71,17 @@ watch(() => props.open, (val) => {
   }
 })
 
+watch(() => formState.tagId, (val) => {
+  if (!val) return
+  const tag = props.tags.find(t => t.id === val)
+  if (tag?.defaultRate) {
+    formState.hourlyRate = tag.defaultRate
+  }
+  if (tag?.name) {
+    formState.title = tag.name
+  }
+})
+
 async function onSubmit(payload: FormSubmitEvent<Schema>) {
   loading.value = true
   try {
@@ -110,14 +121,14 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
           <USelect
             v-model="formState.tagId!"
             :items="tagOptions"
-            placeholder="Sin etiqueta"
+            placeholder="Selecciona una etiqueta"
             class="w-full"
             :autofocus="!editando"
           />
         </UFormField>
 
         <UFormField name="title" label="Título" required>
-          <UInput v-model="formState.title" placeholder="Ej: Reunión cliente" class="w-full" />
+          <UInput v-model="formState.title" placeholder="Indica el título del evento/trabajo" class="w-full" />
         </UFormField>
 
         <div class="grid grid-cols-2 gap-3">
@@ -129,13 +140,13 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
           </UFormField>
         </div>
 
-        <UFormField name="hourlyRate" label="Tarifa por hora (opcional)">
+        <UFormField name="hourlyRate" label="Tarifa (opcional)">
           <UInput
             v-model.number="formState.hourlyRate"
             type="number"
             min="0"
             step="any"
-            placeholder="Ej: 15"
+            placeholder="Indica la tarifa. Ej: 15"
             class="w-full"
           >
             <template #trailing>
@@ -144,8 +155,8 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
           </UInput>
         </UFormField>
 
-        <UFormField name="description" label="Descripción (opcional)">
-          <UTextarea v-model="formState.description" placeholder="Notas del evento..." class="w-full" />
+        <UFormField name="description" label="Observaciones (opcional)">
+          <UTextarea v-model="formState.description" placeholder="Notas del evento/trabajo..." class="w-full" />
         </UFormField>
 
         <div class="flex justify-end gap-2 pt-2">
@@ -153,7 +164,7 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
             Cancelar
           </UButton>
           <UButton type="submit" :loading="loading">
-            {{ editando ? 'Guardar cambios' : 'Crear evento' }}
+            {{ editando ? 'Guardar cambios' : 'Crear evento/trabajo' }}
           </UButton>
         </div>
       </UForm>
