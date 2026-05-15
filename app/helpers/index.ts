@@ -14,4 +14,9 @@ function toDatetimeLocal(iso: string) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
-export { formatFecha, formatMonto, toDatetimeLocal }
+function duracionHoras(start: string, end: string) {
+  const h = (new Date(end).getTime() - new Date(start).getTime()) / (1000 * 60 * 60)
+  return h % 1 === 0 ? `${h}h` : `${h.toFixed(1)}h`
+}
+
+export { formatFecha, formatMonto, toDatetimeLocal, duracionHoras }

@@ -6,6 +6,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list'
 import esLocale from '@fullcalendar/core/locales/es'
 import type { Evento, Tag } from '~/types'
+import { duracionHoras, formatFecha, formatMonto } from '~/helpers'
 
 const { $api } = useNuxtApp()
 const toast = useToast()
@@ -71,22 +72,6 @@ async function confirmarEliminar() {
 
 // ── Helpers ───────────────────────────────────────────────
 const calendarKey = ref(0)
-
-function formatFecha(iso: string) {
-  return new Date(iso).toLocaleString('es-ES', {
-    weekday: 'long', day: '2-digit', month: 'long',
-    hour: '2-digit', minute: '2-digit'
-  })
-}
-
-function formatMonto(n: number) {
-  return n.toLocaleString('es-ES', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0 })
-}
-
-function duracionHoras(start: string, end: string) {
-  const h = (new Date(end).getTime() - new Date(start).getTime()) / (1000 * 60 * 60)
-  return h % 1 === 0 ? `${h}h` : `${h.toFixed(1)}h`
-}
 
 // ── Calendario ────────────────────────────────────────────
 const isMobile = ref(false)
@@ -251,3 +236,17 @@ const calendarOptions = computed(() => ({
     />
   </ClientOnly>
 </template>
+
+<style>
+ .fc-daygrid-day-frame:has(.fc-daygrid-day-events):not(:has(.fc-daygrid-event-harness)) {
+  background-color: #c8f7c5; /* verde clarito */
+}
+
+.fc-daygrid-day-frame:has(.fc-daygrid-event-harness) {
+  background-color: transparent;
+}
+
+.fc-daygrid-event-harness {
+  background: transparent;
+}
+</style>
