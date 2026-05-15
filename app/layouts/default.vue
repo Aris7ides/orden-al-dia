@@ -3,6 +3,7 @@ import type { NavigationMenuItem } from '@nuxt/ui'
 
 const open = ref(false)
 const { logout } = useAuth()
+const { appTitle } = usePreferences()
 
 const items: NavigationMenuItem[] = [
   {
@@ -47,7 +48,7 @@ const items: NavigationMenuItem[] = [
       </template>
       <template #title>
           <div class="p-1 rounded-lg bg-primary-100 ring ring-primary-700 dark:bg-primary-950 dark:ring-primary-400">
-          <span class="font-extrabold text-lg text-primary">ORDEN AL DÍA</span>
+          <span class="font-extrabold text-lg text-primary">{{ appTitle }}</span>
         </div>
       </template>
       <template #right>

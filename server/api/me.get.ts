@@ -12,6 +12,7 @@ export default defineEventHandler(async (event) => {
     userId,
     tenantId,
     tenantName: tenant?.name,
+    currency: tenant?.currency ?? 'EUR',
     role
   }
 })
