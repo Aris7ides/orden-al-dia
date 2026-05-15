@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import * as z from 'zod'
-import type { FormSubmitEvent } from '@nuxt/ui'
 import type { Evento, Tag } from '~/types'
-import { formatFecha, formatMonto, toDatetimeLocal } from '~/helpers'
+import { formatFecha, formatMonto } from '~/helpers'
 
 const { $api } = useNuxtApp()
 const toast = useToast()
@@ -70,80 +68,15 @@ const totalMes = computed(() =>
 // ── Modal crear / editar ───────────────────────────────────
 const modalOpen = ref(false)
 const editando = ref<Evento | null>(null)
-const formLoading = ref(false)
-
-const schema = z.object({
-  title: z.string().min(1, 'El título es obligatorio'),
-  tagId: z.string().optional().nullable(),
-  startTime: z.string().min(1, 'Fecha inicio obligatoria'),
-  endTime: z.string().min(1, 'Fecha fin obligatoria'),
-  hourlyRate: z.coerce.number().positive().optional().nullable(),
-  description: z.string().optional().nullable()
-})
-
-type Schema = z.output<typeof schema>
-
-const formState = reactive({
-  title: '',
-  tagId: null as string | null,
-  startTime: '',
-  endTime: '',
-  hourlyRate: null as number | null,
-  description: ''
-})
-
-const tagOptions = computed(() =>
-  tags.value.map(t => ({ label: t.name, value: t.id, color: t.color }))
-)
 
 function abrirCrear() {
   editando.value = null
-  const ahora = new Date()
-  const pad = (n: number) => String(n).padStart(2, '0')
-  const base = `${ahora.getFullYear()}-${pad(ahora.getMonth() + 1)}-${pad(ahora.getDate())}T${pad(ahora.getHours())}:00`
-  formState.title = ''
-  formState.tagId = null
-  formState.startTime = base
-  formState.endTime = base
-  formState.hourlyRate = null
-  formState.description = ''
   modalOpen.value = true
 }
 
 function abrirEditar(e: Evento) {
   editando.value = e
-  formState.title = e.title
-  formState.tagId = e.tagId
-  formState.startTime = toDatetimeLocal(e.startTime)
-  formState.endTime = toDatetimeLocal(e.endTime)
-  formState.hourlyRate = e.hourlyRate
-  formState.description = e.description ?? ''
   modalOpen.value = true
-}
-
-async function onSubmit(payload: FormSubmitEvent<Schema>) {
-  formLoading.value = true
-  try {
-    const body = {
-      ...payload.data,
-      startTime: new Date(payload.data.startTime).toISOString(),
-      endTime: new Date(payload.data.endTime).toISOString()
-    }
-
-    if (editando.value) {
-      await $api('/events', { method: 'PUT', body: { id: editando.value.id, ...body } })
-      toast.add({ title: 'Evento actualizado', color: 'success' })
-    } else {
-      await $api('/events', { method: 'POST', body })
-      toast.add({ title: 'Evento creado', color: 'success' })
-    }
-    modalOpen.value = false
-    await cargarDatos()
-  } catch {
-    toast.add({ title: 'Error al guardar', color: 'error' })
-  } finally {
-    formLoading.value = false
-  }
 }
 
 // ── Modal eliminar ─────────────────────────────────────────
@@ -155,9 +88,11 @@ function abrirEliminar(e: Evento) {
   deleteModalOpen.value = true
 }
 
+const deleting = ref(false)
+
 async function confirmarEliminar() {
   if (!eliminando.value) return
-  formLoading.value = true
+  deleting.value = true
   try {
     await $api(`/events`, { method: 'DELETE', query: { id: eliminando.value.id } })
     toast.add({ title: 'Evento eliminado', color: 'success' })
@@ -166,7 +101,7 @@ async function confirmarEliminar() {
   } catch {
     toast.add({ title: 'Error al eliminar', color: 'error' })
   } finally {
-    formLoading.value = false
+    deleting.value = false
   }
 }
 </script>
@@ -241,74 +176,12 @@ async function confirmarEliminar() {
     </div>
 
     <!-- Modal crear / editar -->
-    <UModal
+    <EventoFormModal
       v-model:open="modalOpen"
-      :title="editando ? 'Editar evento' : 'Nuevo evento'"
-    >
-      <template #body>
-        <UForm :schema="schema" :state="formState" class="space-y-4" @submit="onSubmit">
-          <UFormField name="tagId" label="Etiqueta">
-            <USelect
-              v-model="formState.tagId!"
-              :items="tagOptions"
-              placeholder="Sin etiqueta"
-              class="w-full"
-              :autofocus="!editando"
-            />
-          </UFormField>
-
-          <UFormField name="title" label="Título" required>
-            <UInput v-model="formState.title" placeholder="Ej: Reunión cliente" class="w-full" clearable>
-              <template v-if="formState.title?.length && !editando" #trailing>
-                <UButton
-                  color="neutral"
-                  variant="link"
-                  size="sm"
-                  icon="i-lucide-circle-x"
-                  aria-label="Limpiar campo"
-                  @click="formState.title = ''"
-                />
-              </template>
-            </UInput>
-          </UFormField>
-
-          <div class="grid grid-cols-2 gap-3">
-            <UFormField name="startTime" label="Inicio" required>
-              <UInput v-model="formState.startTime" type="datetime-local" class="w-full" />
-            </UFormField>
-            <UFormField name="endTime" label="Fin" required>
-              <UInput v-model="formState.endTime" type="datetime-local" class="w-full" />
-            </UFormField>
-          </div>
-
-          <UFormField name="hourlyRate" label="Tarifa por hora (opcional)">
-            <UInput
-              v-model.number="formState.hourlyRate"
-              type="number"
-              min="0"
-              step="any"
-              placeholder="Ej: 15"
-              class="w-full"
-            >
-              <template #trailing>
-                <span class="text-zinc-400 text-sm">/h</span>
-              </template>
-            </UInput>
-          </UFormField>
-
-          <UFormField name="description" label="Descripción (opcional)">
-            <UTextarea v-model="formState.description" placeholder="Notas del evento..." class="w-full" />
-          </UFormField>
-
-          <div class="flex justify-end gap-2 pt-2">
-            <UButton variant="ghost" color="neutral" type="button" @click="modalOpen = false">Cancelar</UButton>
-            <UButton type="submit" :loading="formLoading">
-              {{ editando ? 'Guardar cambios' : 'Crear evento' }}
-            </UButton>
-          </div>
-        </UForm>
-      </template>
-    </UModal>
+      :editando="editando"
+      :tags="tags"
+      @guardado="cargarDatos"
+    />
 
     <!-- Modal confirmar eliminación -->
     <UModal v-model:open="deleteModalOpen" title="Eliminar evento">
@@ -322,7 +195,7 @@ async function confirmarEliminar() {
       <template #footer>
         <div class="flex justify-end gap-2 w-full">
           <UButton variant="ghost" color="neutral" @click="deleteModalOpen = false">Cancelar</UButton>
-          <UButton color="error" :loading="formLoading" @click="confirmarEliminar">Eliminar</UButton>
+          <UButton color="error" :loading="deleting" @click="confirmarEliminar">Eliminar</UButton>
         </div>
       </template>
     </UModal>

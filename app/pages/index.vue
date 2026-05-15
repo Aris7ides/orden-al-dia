@@ -5,24 +5,14 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list'
 import esLocale from '@fullcalendar/core/locales/es'
-import type { Tag } from '~/types'
+import type { Evento, Tag } from '~/types'
 
 const { $api } = useNuxtApp()
 const toast = useToast()
 
-type Evento = {
-  id: string
-  title: string
-  description: string | null
-  startTime: string
-  endTime: string
-  hourlyRate: number | null
-  totalAmount: number | null
-  tag: Tag | null
-}
-
 // ── Eventos del calendario ────────────────────────────────
 const eventosRaw = ref<Evento[]>([])
+const tags = ref<Tag[]>([])
 
 async function cargarEventos(from: string, to: string) {
   try {
@@ -30,6 +20,21 @@ async function cargarEventos(from: string, to: string) {
   } catch {
     toast.add({ title: 'Error al cargar eventos', color: 'error' })
   }
+}
+
+onMounted(async () => {
+  try { tags.value = await $api<Tag[]>('/tags') } catch {}
+})
+
+// ── Modal crear (desde día del calendario) ────────────────
+const crearModalOpen = ref(false)
+const fechaInicialCrear = ref<string | undefined>()
+
+function abrirCrearEnFecha(fechaISO: string) {
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const d = new Date(fechaISO)
+  fechaInicialCrear.value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T09:00`
+  crearModalOpen.value = true
 }
 
 // ── Modal detalle ─────────────────────────────────────────
@@ -139,6 +144,11 @@ const calendarOptions = computed(() => ({
     cargarEventos(info.start.toISOString(), info.end.toISOString())
   },
 
+  // Click en día vacío → abrir modal de creación
+  dateClick(info: { dateStr: string }) {
+    abrirCrearEnFecha(info.dateStr)
+  },
+
   events: eventosRaw.value.map(e => ({
     id: e.id,
     title: e.title,
@@ -233,5 +243,13 @@ watch(eventosRaw, () => { calendarKey.value++ })
         </div>
       </template>
     </UModal>
+
+    <!-- Modal crear evento desde click en día -->
+    <EventoFormModal
+      v-model:open="crearModalOpen"
+      :tags="tags"
+      :fecha-inicial="fechaInicialCrear"
+      @guardado="calendarKey++"
+    />
   </ClientOnly>
 </template>
