@@ -242,6 +242,16 @@ const calendarOptions = computed(() => ({
   background-color: #c8f7c5; /* verde clarito */
 }
 
+@media (prefers-color-scheme: dark) {
+  .fc-daygrid-day-frame:has(.fc-daygrid-day-events):not(:has(.fc-daygrid-event-harness)) {
+    background-color: #1f3a1f; /* verde oscuro suave */
+  }
+}
+
+.dark .fc-daygrid-day-frame:has(.fc-daygrid-day-events):not(:has(.fc-daygrid-event-harness)) {
+    background-color: #1f3a1f; /* verde oscuro suave */
+  }
+
 .fc-daygrid-day-frame:has(.fc-daygrid-event-harness) {
   background-color: transparent;
 }
