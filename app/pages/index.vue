@@ -259,4 +259,9 @@ const calendarOptions = computed(() => ({
 .fc-daygrid-event-harness {
   background: transparent;
 }
+
+.fc .fc-button-primary {
+  background-color: var(--ui-color-primary-500) !important;
+  border-color: var(--ui-color-primary-700) !important;
+}
 </style>
