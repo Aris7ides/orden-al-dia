@@ -164,8 +164,6 @@ const calendarOptions = computed(() => ({
   }
 }))
 
-// Refrescar eventos en el mapa cuando cambian los datos
-watch(eventosRaw, () => { calendarKey.value++ })
 </script>
 
 <template>
