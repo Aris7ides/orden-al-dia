@@ -238,6 +238,10 @@ const calendarOptions = computed(() => ({
 </template>
 
 <style>
+:root {
+  --fc-daygrid-event-dot-width: 12px;
+}
+
  .fc-daygrid-day-frame:has(.fc-daygrid-day-events):not(:has(.fc-daygrid-event-harness)) {
   background-color: #c8f7c5; /* verde clarito */
 }
