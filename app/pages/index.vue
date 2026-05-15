@@ -242,11 +242,11 @@ const calendarOptions = computed(() => ({
   background-color: #c8f7c5; /* verde clarito */
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   .fc-daygrid-day-frame:has(.fc-daygrid-day-events):not(:has(.fc-daygrid-event-harness)) {
-    background-color: #1f3a1f; /* verde oscuro suave */
+    background-color: #1f3a1f;
   }
-}
+} */
 
 .dark .fc-daygrid-day-frame:has(.fc-daygrid-day-events):not(:has(.fc-daygrid-event-harness)) {
     background-color: #1f3a1f; /* verde oscuro suave */
@@ -263,5 +263,9 @@ const calendarOptions = computed(() => ({
 .fc .fc-button-primary {
   background-color: var(--ui-color-primary-500) !important;
   border-color: var(--ui-color-primary-700) !important;
+}
+
+.fc-event-time {
+  display: none;
 }
 </style>
