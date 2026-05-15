@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
       deletedAt: null
     },
     orderBy: {
-      createdAt: 'desc'
+      name: 'asc'
     }
   })
 

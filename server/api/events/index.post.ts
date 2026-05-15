@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
   const end = new Date(endTime)
   const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60)
 
-  if (hours <= 0) {
+  if (hours < 0) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Invalid time range'

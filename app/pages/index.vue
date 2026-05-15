@@ -5,11 +5,11 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list'
 import esLocale from '@fullcalendar/core/locales/es'
+import type { Tag } from '~/types'
 
 const { $api } = useNuxtApp()
 const toast = useToast()
 
-type Tag = { id: string; name: string; color: string | null }
 type Evento = {
   id: string
   title: string
@@ -68,14 +68,14 @@ async function confirmarEliminar() {
 const calendarKey = ref(0)
 
 function formatFecha(iso: string) {
-  return new Date(iso).toLocaleString('es-AR', {
+  return new Date(iso).toLocaleString('es-ES', {
     weekday: 'long', day: '2-digit', month: 'long',
     hour: '2-digit', minute: '2-digit'
   })
 }
 
 function formatMonto(n: number) {
-  return n.toLocaleString('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 0 })
+  return n.toLocaleString('es-ES', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0 })
 }
 
 function duracionHoras(start: string, end: string) {
@@ -184,7 +184,7 @@ watch(eventosRaw, () => { calendarKey.value++ })
               <span class="capitalize">{{ formatFecha(eventoSeleccionado.startTime) }}</span>
             </div>
             <div class="flex items-center gap-2 pl-6 text-zinc-500">
-              <span>hasta {{ new Date(eventoSeleccionado.endTime).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) }}</span>
+              <span>hasta {{ new Date(eventoSeleccionado.endTime).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) }}</span>
               <span class="text-zinc-600">·</span>
               <span>{{ duracionHoras(eventoSeleccionado.startTime, eventoSeleccionado.endTime) }}</span>
             </div>

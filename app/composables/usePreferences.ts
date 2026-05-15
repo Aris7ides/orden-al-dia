@@ -3,16 +3,11 @@ const STORAGE_KEY = 'app:preferences'
 const COLORES_DISPONIBLES = [
   { label: 'Púrpura', value: 'purple' },
   { label: 'Azul', value: 'blue' },
-  { label: 'Índigo', value: 'indigo' },
-  { label: 'Violeta', value: 'violet' },
   { label: 'Rosa', value: 'pink' },
   { label: 'Rojo', value: 'red' },
   { label: 'Naranja', value: 'orange' },
-  { label: 'Ámbar', value: 'amber' },
   { label: 'Verde', value: 'green' },
-  { label: 'Esmeralda', value: 'emerald' },
   { label: 'Cian', value: 'cyan' },
-  { label: 'Cielo', value: 'sky' },
 ]
 
 interface Preferences {

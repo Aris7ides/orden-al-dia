@@ -1,22 +1,11 @@
 <script setup lang="ts">
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
+import type { Evento, Tag } from '~/types'
+import { formatFecha, formatMonto, toDatetimeLocal } from '~/helpers'
 
 const { $api } = useNuxtApp()
 const toast = useToast()
-
-type Tag = { id: string; name: string; color: string | null }
-type Evento = {
-  id: string
-  title: string
-  description: string | null
-  startTime: string
-  endTime: string
-  hourlyRate: number | null
-  totalAmount: number | null
-  tagId: string | null
-  tag: Tag | null
-}
 
 // ── Mes actual ────────────────────────────────────────────
 const hoy = new Date()
@@ -24,7 +13,7 @@ const mesActual = ref({ year: hoy.getFullYear(), month: hoy.getMonth() }) // 0-i
 
 const mesLabel = computed(() => {
   const d = new Date(mesActual.value.year, mesActual.value.month, 1)
-  return d.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' })
+  return d.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })
 })
 
 function mesAnterior() {
@@ -77,23 +66,6 @@ onMounted(cargarDatos)
 const totalMes = computed(() =>
   eventos.value.reduce((acc, e) => acc + (e.totalAmount ?? 0), 0)
 )
-
-// ── Helpers ───────────────────────────────────────────────
-function formatFecha(iso: string) {
-  return new Date(iso).toLocaleDateString('es-AR', {
-    day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
-  })
-}
-
-function formatMonto(n: number) {
-  return n.toLocaleString('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 0 })
-}
-
-function toDatetimeLocal(iso: string) {
-  const d = new Date(iso)
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
-}
 
 // ── Modal crear / editar ───────────────────────────────────
 const modalOpen = ref(false)
@@ -200,7 +172,7 @@ async function confirmarEliminar() {
 </script>
 
 <template>
-  <div class="p-4 max-w-2xl mx-auto">
+  <div class="h-screen flex flex-col p-4 max-w-2xl mx-auto">
     <!-- Encabezado -->
     <div class="flex items-center justify-between mb-4">
       <h1 class="text-xl font-semibold capitalize">{{ mesLabel }}</h1>
@@ -210,8 +182,8 @@ async function confirmarEliminar() {
     <!-- Navegación de mes -->
     <div class="flex items-center justify-between mb-6">
       <UButton icon="i-lucide-chevron-left" variant="ghost" color="neutral" @click="mesAnterior" />
-      <span v-if="totalMes > 0" class="text-sm text-zinc-400">
-        Total: <span class="text-white font-semibold">{{ formatMonto(totalMes) }}</span>
+      <span v-if="totalMes > 0" class="text-sm text-zinc-900 dark:text-zinc-400">
+        Total: <span class="dark:text-white font-semibold">{{ formatMonto(totalMes) }}</span>
       </span>
       <span v-else class="text-sm text-zinc-500">Sin ingresos registrados</span>
       <UButton icon="i-lucide-chevron-right" variant="ghost" color="neutral" @click="mesSiguiente" />
@@ -232,39 +204,41 @@ async function confirmarEliminar() {
     </div>
 
     <!-- Listado -->
-    <ul v-else class="space-y-2">
-      <li
-        v-for="e in eventos"
-        :key="e.id"
-        class="flex items-start justify-between gap-3 p-4 rounded-lg border border-zinc-700 bg-zinc-900"
-      >
-        <div class="flex items-start gap-3 min-w-0">
-          <span
-            v-if="e.tag"
-            class="mt-1 w-3 h-3 rounded-full shrink-0 border border-white/10"
-            :style="{ backgroundColor: e.tag.color ?? '#7c3aed' }"
-          />
-          <UIcon v-else name="i-lucide-calendar" class="mt-1 w-3 h-3 shrink-0 text-zinc-500" />
-          <div class="min-w-0">
-            <p class="font-medium truncate">{{ e.title }}</p>
-            <p v-if="e.tag" class="text-xs text-zinc-400">{{ e.tag.name }}</p>
-            <p class="text-xs text-zinc-500 mt-0.5">
-              {{ formatFecha(e.startTime) }} → {{ formatFecha(e.endTime) }}
-            </p>
-            <p v-if="e.description" class="text-xs text-zinc-500 truncate mt-0.5">{{ e.description }}</p>
+    <div v-else class="flex-1 overflow-y-auto space-y-2 pr-1">
+      <ul class="space-y-2">
+        <li
+          v-for="e in eventos"
+          :key="e.id"
+          class="flex items-start justify-between gap-3 p-4 rounded-lg border border-primary-700 dark:border-zinc-700 bg-primary-100 dark:bg-zinc-900"
+        >
+          <div class="flex items-start gap-3 min-w-0">
+            <span
+              v-if="e.tag"
+              class="mt-1 w-3 h-3 rounded-full shrink-0 border border-white/10"
+              :style="{ backgroundColor: e.tag.color ?? '#7c3aed' }"
+            />
+            <UIcon v-else name="i-lucide-calendar" class="mt-1 w-3 h-3 shrink-0 text-zinc-500" />
+            <div class="min-w-0">
+              <p class="font-medium truncate">{{ e.title }}</p>
+              <p v-if="e.tag" class="text-xs text-zinc-400">{{ e.tag.name }}</p>
+              <p class="text-xs text-zinc-500 mt-0.5">
+                {{ formatFecha(e.startTime) }} → {{ formatFecha(e.endTime) }}
+              </p>
+              <p v-if="e.description" class="text-xs text-zinc-500 truncate mt-0.5">{{ e.description }}</p>
+            </div>
           </div>
-        </div>
-        <div class="flex flex-col items-end gap-1 shrink-0">
-          <span v-if="e.totalAmount" class="text-sm font-semibold text-emerald-400">
-            {{ formatMonto(e.totalAmount) }}
-          </span>
-          <div class="flex gap-1">
-            <UButton icon="i-lucide-pencil" variant="ghost" color="neutral" size="sm" @click="abrirEditar(e)" />
-            <UButton icon="i-lucide-trash-2" variant="ghost" color="error" size="sm" @click="abrirEliminar(e)" />
+          <div class="flex flex-col items-end gap-1 shrink-0">
+            <span v-if="e.totalAmount" class="text-sm font-semibold text-emerald-400">
+              {{ formatMonto(e.totalAmount) }}
+            </span>
+            <div class="flex gap-1">
+              <UButton icon="i-lucide-pencil" variant="ghost" color="neutral" size="sm" @click="abrirEditar(e)" />
+              <UButton icon="i-lucide-trash-2" variant="ghost" color="error" size="sm" @click="abrirEliminar(e)" />
+            </div>
           </div>
-        </div>
-      </li>
-    </ul>
+        </li>
+      </ul>
+    </div>
 
     <!-- Modal crear / editar -->
     <UModal
@@ -273,17 +247,29 @@ async function confirmarEliminar() {
     >
       <template #body>
         <UForm :schema="schema" :state="formState" class="space-y-4" @submit="onSubmit">
-          <UFormField name="title" label="Título" required>
-            <UInput v-model="formState.title" placeholder="Ej: Reunión cliente" class="w-full" autofocus />
-          </UFormField>
-
           <UFormField name="tagId" label="Etiqueta">
             <USelect
               v-model="formState.tagId!"
               :items="tagOptions"
               placeholder="Sin etiqueta"
               class="w-full"
+              :autofocus="!editando"
             />
+          </UFormField>
+
+          <UFormField name="title" label="Título" required>
+            <UInput v-model="formState.title" placeholder="Ej: Reunión cliente" class="w-full" clearable>
+              <template v-if="formState.title?.length && !editando" #trailing>
+                <UButton
+                  color="neutral"
+                  variant="link"
+                  size="sm"
+                  icon="i-lucide-circle-x"
+                  aria-label="Limpiar campo"
+                  @click="formState.title = ''"
+                />
+              </template>
+            </UInput>
           </UFormField>
 
           <div class="grid grid-cols-2 gap-3">
@@ -301,7 +287,7 @@ async function confirmarEliminar() {
               type="number"
               min="0"
               step="any"
-              placeholder="Ej: 5000"
+              placeholder="Ej: 15"
               class="w-full"
             >
               <template #trailing>
@@ -327,9 +313,9 @@ async function confirmarEliminar() {
     <!-- Modal confirmar eliminación -->
     <UModal v-model:open="deleteModalOpen" title="Eliminar evento">
       <template #body>
-        <p class="text-sm text-zinc-300">
+        <p class="text-sm dark:text-zinc-300">
           ¿Estás seguro de que querés eliminar
-          <strong class="text-white">{{ eliminando?.title }}</strong>?
+          <strong class="dark:text-white">{{ eliminando?.title }}</strong>?
           Esta acción no se puede deshacer.
         </p>
       </template>
@@ -342,4 +328,3 @@ async function confirmarEliminar() {
     </UModal>
   </div>
 </template>
-

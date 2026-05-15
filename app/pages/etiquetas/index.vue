@@ -1,17 +1,10 @@
 <script setup lang="ts">
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
+import type { Tag } from '~/types'
 
 const { $api } = useNuxtApp()
 const toast = useToast()
-
-type Tag = {
-  id: string
-  name: string
-  color: string | null
-  defaultRate: number | null
-  createdAt: string
-}
 
 const tags = ref<Tag[]>([])
 const loading = ref(false)
@@ -105,7 +98,7 @@ onMounted(loadTags)
 </script>
 
 <template>
-  <div class="p-4 max-w-2xl mx-auto">
+  <div class="h-screen flex flex-col p-4 max-w-2xl mx-auto">
     <!-- Encabezado -->
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-xl font-semibold">Etiquetas</h1>
@@ -129,44 +122,46 @@ onMounted(loadTags)
     </div>
 
     <!-- Listado -->
-    <ul v-else class="space-y-2">
-      <li
-        v-for="tag in tags"
-        :key="tag.id"
-        class="flex items-center justify-between gap-3 p-4 rounded-lg border border-zinc-700 bg-zinc-900"
-      >
-        <div class="flex items-center gap-3 min-w-0">
-          <span
-            class="w-4 h-4 rounded-full shrink-0 border border-white/10"
-            :style="{ backgroundColor: tag.color ?? '#7c3aed' }"
-          />
-          <div class="min-w-0">
-            <p class="font-medium truncate">{{ tag.name }}</p>
-            <p v-if="tag.defaultRate" class="text-xs text-zinc-400">
-              {{ tag.defaultRate.toLocaleString('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 0 }) }}/h
-            </p>
+    <div v-else class="flex-1 overflow-y-auto space-y-2 pr-1">
+      <ul class="space-y-2">
+        <li
+          v-for="tag in tags"
+          :key="tag.id"
+          class="flex items-center justify-between gap-3 p-4 rounded-lg border border-primary-700 bg-primary-100 dark:border-zinc-700 dark:bg-zinc-900"
+        >
+          <div class="flex items-center gap-3 min-w-0">
+            <span
+              class="w-4 h-4 rounded-full shrink-0 border border-white/10"
+              :style="{ backgroundColor: tag.color ?? '#7c3aed' }"
+            />
+            <div class="min-w-0">
+              <p class="font-medium truncate">{{ tag.name }}</p>
+              <p v-if="tag.defaultRate" class="text-xs text-zinc-400">
+                {{ tag.defaultRate.toLocaleString('es-ES', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0 }) }}/h
+              </p>
+            </div>
           </div>
-        </div>
-        <div class="flex gap-1 shrink-0">
-          <UButton
-            icon="i-lucide-pencil"
-            variant="ghost"
-            color="neutral"
-            size="sm"
-            aria-label="Editar"
-            @click="openEdit(tag)"
-          />
-          <UButton
-            icon="i-lucide-trash-2"
-            variant="ghost"
-            color="error"
-            size="sm"
-            aria-label="Eliminar"
-            @click="openDelete(tag)"
-          />
-        </div>
-      </li>
-    </ul>
+          <div class="flex gap-1 shrink-0">
+            <UButton
+              icon="i-lucide-pencil"
+              variant="ghost"
+              color="neutral"
+              size="sm"
+              aria-label="Editar"
+              @click="openEdit(tag)"
+            />
+            <UButton
+              icon="i-lucide-trash-2"
+              variant="ghost"
+              color="error"
+              size="sm"
+              aria-label="Eliminar"
+              @click="openDelete(tag)"
+            />
+          </div>
+        </li>
+      </ul>
+    </div>
 
     <!-- Modal crear / editar -->
     <UModal
@@ -225,9 +220,9 @@ onMounted(loadTags)
     <!-- Modal confirmar eliminación -->
     <UModal v-model:open="deleteModalOpen" title="Eliminar etiqueta">
       <template #body>
-        <p class="text-sm text-zinc-300">
+        <p class="text-sm dark:text-zinc-300">
           ¿Estás seguro de que querés eliminar la etiqueta
-          <strong class="text-white">{{ deletingTag?.name }}</strong>?
+          <strong class="dark:text-white">{{ deletingTag?.name }}</strong>?
           Esta acción no se puede deshacer.
         </p>
       </template>

@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
   const events = await prisma.event.findMany({
     where,
     include: { tag: true },
-    orderBy: { startTime: 'asc' }
+    orderBy: { startTime: 'desc' }
   })
 
   return events

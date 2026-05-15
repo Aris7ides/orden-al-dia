@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
     data: {
       tenantId: tenant.id,
       userId: user.id,
-      role: 'owner'
+      role: 'member'
     }
   })
 
